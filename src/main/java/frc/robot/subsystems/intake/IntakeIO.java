@@ -2,9 +2,11 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public class IntakeIO {
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+public interface IntakeIO {
   @AutoLog
-  public class CoralIOInputs {
+  public class IntakeIOInputs {
     public double intakeTemperature;
     public double intakeRPM;
     public double intakeAppliedVolts;
