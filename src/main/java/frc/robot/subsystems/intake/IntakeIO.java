@@ -13,12 +13,12 @@ public interface IntakeIO {
     public double DeployCurrent;
     public double DeployVelocity;
     public Rotation2d DeployPosition;
-    public double rollersTemperature;
-    public double rollersRPM;
-    public double rollersAppliedVolts;
-    public double rollersCurrent;
-    public double rollersVelocity;
-    public double rollersPosition;
+    public double RollersTemperature;
+    public double RollersRPM;
+    public double RollersAppliedVolts;
+    public double RollersCurrent;
+    public double RollersVelocity;
+    public double RollersPosition;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}
