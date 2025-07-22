@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface GripperIO {
   @AutoLog
-  public class GripperIOInput {
+  public static class GripperIOInput {
 
     public double velocityRPM;
     public double appliedVolts;
