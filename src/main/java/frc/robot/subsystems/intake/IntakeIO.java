@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
@@ -11,7 +12,7 @@ public interface IntakeIO {
     public double intakeDeployAppliedVolts;
     public double intakeDeployCurrent;
     public double intakeDeployVelocity;
-    public double intakeDeployPosition;
+    public Rotation2d intakeDeployPosition;
     public double intakeTemperature;
     public double intakeRPM;
     public double intakeAppliedVolts;
@@ -30,7 +31,7 @@ public interface IntakeIO {
 
   public default void runIntakeVolts(double volts) {}
 
-  public default void setPivotAngle(rotation2d angle) {}
+  public default void setPivotAngle(Rotation2d angle) {}
 
   public default void setModeIntake(NeutralModeValue mode) {}
 
