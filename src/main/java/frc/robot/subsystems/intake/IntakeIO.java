@@ -7,18 +7,18 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    public double intakeDeployTemperature;
-    public double intakeDeployRPM;
-    public double intakeDeployAppliedVolts;
-    public double intakeDeployCurrent;
-    public double intakeDeployVelocity;
-    public Rotation2d intakeDeployPosition;
-    public double intakeTemperature;
-    public double intakeRPM;
-    public double intakeAppliedVolts;
-    public double intakeCurrent;
-    public double intakeVelocity;
-    public double intakePosition;
+    public double DeployTemperature;
+    public double DeployRPM;
+    public double DeployAppliedVolts;
+    public double DeployCurrent;
+    public double DeployVelocity;
+    public Rotation2d DeployPosition;
+    public double rollersTemperature;
+    public double rollersRPM;
+    public double rollersAppliedVolts;
+    public double rollersCurrent;
+    public double rollersVelocity;
+    public double rollersPosition;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}
