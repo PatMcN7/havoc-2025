@@ -3,7 +3,6 @@ package frc.robot.subsystems.shoulder;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShoulderIO {

@@ -3,7 +3,6 @@ package frc.robot.subsystems.shoulder;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -34,7 +33,8 @@ public class ShoulderIOSim implements ShoulderIO {
 
   @Override
   public void updateInputs(ShoulderIOInputs inputs) {
-    appliedVoltage = isClosedLoop ? pid.calculate(Units.degreesToRadians(inputs.angleDeg)) : appliedVoltage;
+    appliedVoltage =
+        isClosedLoop ? pid.calculate(Units.degreesToRadians(inputs.angleDeg)) : appliedVoltage;
     inputs.voltage = appliedVoltage;
     sim.setInputVoltage(appliedVoltage);
     sim.update(0.02);

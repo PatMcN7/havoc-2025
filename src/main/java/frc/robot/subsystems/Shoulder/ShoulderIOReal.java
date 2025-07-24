@@ -7,7 +7,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import frc.Motor_factories.Motors.CanDeviceID;
 import frc.Motor_factories.Motors.TalonFXFactory;
 
@@ -21,14 +20,19 @@ public class ShoulderIOReal implements ShoulderIO {
     SoftwareLimitSwitchConfigs limitConfig = new SoftwareLimitSwitchConfigs();
     limitConfig.withForwardSoftLimitEnable(true);
     limitConfig.withReverseSoftLimitEnable(true);
-    limitConfig.withForwardSoftLimitThreshold(ShoulderConstants.MinAngle/360 * ShoulderConstants.MotorToArmRatio);
-    limitConfig.withReverseSoftLimitThreshold(ShoulderConstants.MaxAngle/360 * ShoulderConstants.MotorToArmRatio);
+    limitConfig.withForwardSoftLimitThreshold(
+        ShoulderConstants.MinAngle / 360 * ShoulderConstants.MotorToArmRatio);
+    limitConfig.withReverseSoftLimitThreshold(
+        ShoulderConstants.MaxAngle / 360 * ShoulderConstants.MotorToArmRatio);
     config.withSoftwareLimitSwitch(limitConfig);
   }
 
   @Override
   public void updateInputs(ShoulderIOInputs inputs) {
-    inputs.angleDeg = shoulderMotor.getPosition().getValueAsDouble() * 360 / ShoulderConstants.MotorToArmRatio; // Convert to radians
+    inputs.angleDeg =
+        shoulderMotor.getPosition().getValueAsDouble()
+            * 360
+            / ShoulderConstants.MotorToArmRatio; // Convert to radians
     inputs.velocityRPM = shoulderMotor.getVelocity().getValueAsDouble() * 60;
     inputs.voltage = shoulderMotor.getMotorVoltage().getValueAsDouble();
     inputs.torqueCurrent = shoulderMotor.getTorqueCurrent().getValueAsDouble();
@@ -42,7 +46,9 @@ public class ShoulderIOReal implements ShoulderIO {
 
   @Override
   public void setAngle(double angleDeg) {
-    shoulderMotor.setControl(new MotionMagicVoltage(angleDeg/360 * ShoulderConstants.MotorToArmRatio).withEnableFOC(true));
+    shoulderMotor.setControl(
+        new MotionMagicVoltage(angleDeg / 360 * ShoulderConstants.MotorToArmRatio)
+            .withEnableFOC(true));
   }
 
   @Override
@@ -57,7 +63,7 @@ public class ShoulderIOReal implements ShoulderIO {
 
   @Override
   public void resetAngle(double angleDeg) {
-    shoulderMotor.setPosition(angleDeg/360);
+    shoulderMotor.setPosition(angleDeg / 360);
   }
 
   @Override

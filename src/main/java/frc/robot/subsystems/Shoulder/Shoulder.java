@@ -4,14 +4,9 @@
 
 package frc.robot.subsystems.shoulder;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Shoulder.ShoulderIOInputsAutoLogged;
 
 public class Shoulder extends SubsystemBase {
   private double wantedAngleDeg;
@@ -30,7 +25,7 @@ public class Shoulder extends SubsystemBase {
 
   /** Creates a new Shoulder. */
   public Shoulder() {
-    switch(Constants.currentMode){
+    switch (Constants.currentMode) {
       case REAL:
         io = new ShoulderIOReal();
         io.setPID(ShoulderConstants.PIDConfigs);
@@ -59,12 +54,12 @@ public class Shoulder extends SubsystemBase {
       case HOME:
         return ShoulderState.HOME;
       case HOLDING:
-        if(MathUtil.isNear(inputs.angleDeg, ShoulderConstants.HomeAngle, 0.1)){
+        if (MathUtil.isNear(inputs.angleDeg, ShoulderConstants.HomeAngle, 0.1)) {
           return ShoulderState.HOME;
         }
         return ShoulderState.HOLDING;
       case MOVING:
-        if(MathUtil.isNear(inputs.angleDeg, wantedAngleDeg, 0.1)){
+        if (MathUtil.isNear(inputs.angleDeg, wantedAngleDeg, 0.1)) {
           wantedState = ShoulderState.HOLDING;
           return ShoulderState.HOLDING;
         }
@@ -79,7 +74,7 @@ public class Shoulder extends SubsystemBase {
     switch (wantedState) {
       case HOME:
         io.setVoltage(8);
-        if(inputs.torqueCurrent > 100 || inputs.velocityRPM < 1){
+        if (inputs.torqueCurrent > 100 || inputs.velocityRPM < 1) {
           io.resetAngle(ShoulderConstants.MinAngle);
           wantedState = ShoulderState.MOVING;
           wantedAngleDeg = ShoulderConstants.HomeAngle;
