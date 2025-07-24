@@ -2,14 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.Shoulder;
+package frc.robot.subsystems.shoulder;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Shoulder.ShoulderIOInputsAutoLogged;
 
 public class Shoulder extends SubsystemBase {
-  private Rotation2d wantedAngle;
+  private double wantedAngleDeg;
   private ShoulderIOInputsAutoLogged inputs = new ShoulderIOInputsAutoLogged();
   private ShoulderIO io;
   private static Shoulder instance;
@@ -28,9 +33,12 @@ public class Shoulder extends SubsystemBase {
     switch(Constants.currentMode){
       case REAL:
         io = new ShoulderIOReal();
+        io.setPID(ShoulderConstants.PIDConfigs);
+        io.setMotionMagic(ShoulderConstants.MMConfigs);
         break;
       case SIM:
         io = new ShoulderIOSim();
+        io.setPID(ShoulderConstants.PIDConfigs);
         break;
       case REPLAY:
         io = new ShoulderIO() {};
@@ -51,8 +59,15 @@ public class Shoulder extends SubsystemBase {
       case HOME:
         return ShoulderState.HOME;
       case HOLDING:
+        if(MathUtil.isNear(inputs.angleDeg, ShoulderConstants.HomeAngle, 0.1)){
+          return ShoulderState.HOME;
+        }
         return ShoulderState.HOLDING;
       case MOVING:
+        if(MathUtil.isNear(inputs.angleDeg, wantedAngleDeg, 0.1)){
+          wantedState = ShoulderState.HOLDING;
+          return ShoulderState.HOLDING;
+        }
         return ShoulderState.MOVING;
       default:
         System.out.println("EEEEEK onknuwn sHuolDer StAte: " + wantedState);
@@ -63,11 +78,16 @@ public class Shoulder extends SubsystemBase {
   private void applyStates() {
     switch (wantedState) {
       case HOME:
-        io.setAngle(ShoulderConstants.homeAngle);
+        io.setVoltage(8);
+        if(inputs.torqueCurrent > 100 || inputs.velocityRPM < 1){
+          io.resetAngle(ShoulderConstants.MinAngle);
+          wantedState = ShoulderState.MOVING;
+          wantedAngleDeg = ShoulderConstants.HomeAngle;
+        }
       case HOLDING:
-        io.setAngle(wantedAngle.getRotations() * ShoulderConstants.GearRatio);
+        io.setAngle(inputs.angleDeg);
       case MOVING:
-        io.setAngle(wantedAngle.getRotations() * ShoulderConstants.GearRatio);
+        io.setAngle(wantedAngleDeg);
       default:
         System.out.println("EEEEEK onknuwn sHuolDer StAte: " + wantedState);
         // return currentState;
@@ -84,9 +104,9 @@ public class Shoulder extends SubsystemBase {
    * @param state Wanted Shoulder State
    * @param angle Wanted Shoulder Angle
    */
-  public void setWantedState(ShoulderState state, Rotation2d angle) {
+  public void setWantedState(ShoulderState state, double angleDeg) {
     wantedState = state;
-    wantedAngle = angle;
+    wantedAngleDeg = angleDeg;
   }
 
   public Shoulder getInstance() {

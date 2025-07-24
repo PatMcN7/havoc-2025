@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Shoulder;
+package frc.robot.subsystems.shoulder;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -20,13 +20,13 @@ public class ShoulderIOSim implements ShoulderIO {
     sim =
         new SingleJointedArmSim(
             DCMotor.getFalcon500(1),
-            ShoulderConstants.GearRatio,
+            ShoulderConstants.MotorToArmRatio,
             10.0,
             0.5,
-            ShoulderConstants.MinAngle,
-            ShoulderConstants.MaxAngle,
+            Units.degreesToRadians(ShoulderConstants.MinAngle),
+            Units.degreesToRadians(ShoulderConstants.MaxAngle),
             true,
-            ShoulderConstants.MinAngle,
+            Units.degreesToRadians(ShoulderConstants.MinAngle),
             null);
 
     pid = new PIDController(1, 0, 0);
@@ -34,11 +34,12 @@ public class ShoulderIOSim implements ShoulderIO {
 
   @Override
   public void updateInputs(ShoulderIOInputs inputs) {
-    sim.update(0.02);
-    inputs.angle = sim.getAngleRads();
-    inputs.velocity = sim.getVelocityRadPerSec();
-    appliedVoltage = isClosedLoop ? pid.calculate(inputs.angle) : appliedVoltage;
+    appliedVoltage = isClosedLoop ? pid.calculate(Units.degreesToRadians(inputs.angleDeg)) : appliedVoltage;
     inputs.voltage = appliedVoltage;
+    sim.setInputVoltage(appliedVoltage);
+    sim.update(0.02);
+    inputs.angleDeg = Units.radiansToDegrees(sim.getAngleRads());
+    inputs.velocityRPM = Units.radiansPerSecondToRotationsPerMinute(sim.getVelocityRadPerSec());
     inputs.statorCurrent = sim.getCurrentDrawAmps();
     inputs.torqueCurrent = sim.getCurrentDrawAmps();
   }
@@ -50,8 +51,8 @@ public class ShoulderIOSim implements ShoulderIO {
   }
 
   @Override
-  public void setAngle(double angle) {
-    pid.setSetpoint(angle);
+  public void setAngle(double angleDeg) {
+    pid.setSetpoint(Units.degreesToRadians(angleDeg));
     isClosedLoop = true;
   }
 
@@ -66,8 +67,8 @@ public class ShoulderIOSim implements ShoulderIO {
   public void setMotionMagic(MotionMagicConfigs motionMagic) {}
 
   @Override
-  public void resetAngle(double angle) {
-    sim.setState(Units.degreesToRadians(angle), sim.getVelocityRadPerSec());
+  public void resetAngle(double angleDeg) {
+    sim.setState(Units.degreesToRadians(angleDeg), sim.getVelocityRadPerSec());
   }
 
   @Override

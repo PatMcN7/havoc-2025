@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Shoulder;
+package frc.robot.subsystems.shoulder;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -8,29 +8,31 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.Motor_factories.Motors.CanDeviceID;
+import frc.Motor_factories.Motors.TalonFXFactory;
+
 public class ShoulderIOReal implements ShoulderIO {
   private TalonFX shoulderMotor;
 
   public ShoulderIOReal() {
-    shoulderMotor = new TalonFX(ShoulderConstants.MotorID);
+    CanDeviceID canDevice = new CanDeviceID(ShoulderConstants.MotorID, "CANIVORE 3");
+    shoulderMotor = TalonFXFactory.createDefaultTalon(canDevice);
     TalonFXConfiguration config = new TalonFXConfiguration();
     SoftwareLimitSwitchConfigs limitConfig = new SoftwareLimitSwitchConfigs();
     limitConfig.withForwardSoftLimitEnable(true);
     limitConfig.withReverseSoftLimitEnable(true);
-    limitConfig.withForwardSoftLimitThreshold(
-        ShoulderConstants.MaxAngle * ShoulderConstants.GearRatio);
-    limitConfig.withReverseSoftLimitThreshold(
-        ShoulderConstants.MinAngle * ShoulderConstants.GearRatio);
+    limitConfig.withForwardSoftLimitThreshold(ShoulderConstants.MinAngle/360 * ShoulderConstants.MotorToArmRatio);
+    limitConfig.withReverseSoftLimitThreshold(ShoulderConstants.MaxAngle/360 * ShoulderConstants.MotorToArmRatio);
     config.withSoftwareLimitSwitch(limitConfig);
   }
 
   @Override
   public void updateInputs(ShoulderIOInputs inputs) {
-    inputs.angle =
-        shoulderMotor.getPosition().getValueAsDouble()
-            / ShoulderConstants.GearRatio; // Convert to radians
-    inputs.velocity = shoulderMotor.getVelocity().getValueAsDouble();
+    inputs.angleDeg = shoulderMotor.getPosition().getValueAsDouble() * 360 / ShoulderConstants.MotorToArmRatio; // Convert to radians
+    inputs.velocityRPM = shoulderMotor.getVelocity().getValueAsDouble() * 60;
     inputs.voltage = shoulderMotor.getMotorVoltage().getValueAsDouble();
+    inputs.torqueCurrent = shoulderMotor.getTorqueCurrent().getValueAsDouble();
+    inputs.statorCurrent = shoulderMotor.getStatorCurrent().getValueAsDouble();
   }
 
   @Override
@@ -39,8 +41,8 @@ public class ShoulderIOReal implements ShoulderIO {
   }
 
   @Override
-  public void setAngle(double angle) {
-    shoulderMotor.setControl(new MotionMagicVoltage(angle * ShoulderConstants.GearRatio));
+  public void setAngle(double angleDeg) {
+    shoulderMotor.setControl(new MotionMagicVoltage(angleDeg/360 * ShoulderConstants.MotorToArmRatio).withEnableFOC(true));
   }
 
   @Override
@@ -54,8 +56,8 @@ public class ShoulderIOReal implements ShoulderIO {
   }
 
   @Override
-  public void resetAngle(double angle) {
-    shoulderMotor.setPosition(angle * ShoulderConstants.GearRatio);
+  public void resetAngle(double angleDeg) {
+    shoulderMotor.setPosition(angleDeg/360);
   }
 
   @Override

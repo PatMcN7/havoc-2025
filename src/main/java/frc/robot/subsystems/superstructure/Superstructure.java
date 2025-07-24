@@ -5,11 +5,11 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Shoulder.Shoulder;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shoulder.Shoulder;
 import frc.robot.subsystems.straightenator.Straightenator;
 
 public class Superstructure extends SubsystemBase {
