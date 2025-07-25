@@ -7,7 +7,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ShoulderIO {
   @AutoLog
-  public class ShoulderIOInputs {
+  public static class ShoulderIOInputs {
     public double angleDeg;
     public double velocityRPM;
     public double voltage;

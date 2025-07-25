@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shoulder;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -45,6 +47,8 @@ public class Shoulder extends SubsystemBase {
 
   @Override
   public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Shoulder", inputs);
     currentState = handleStateTransitions();
     applyStates();
   }
