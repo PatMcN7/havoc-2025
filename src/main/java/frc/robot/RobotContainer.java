@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -115,6 +116,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    Trigger upFlick = new Trigger(() -> controller.getLeftY() < -0.25);
+    Trigger downFlick = new Trigger(() -> controller.getLeftY() > 0.25);
+    Trigger rightFlick = new Trigger(() -> controller.getLeftX() > 0.25);
+    Trigger leftFlick = new Trigger(() -> controller.getLeftX() < -0.25);
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -123,22 +128,9 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    // Lock to 0° when A button is held
+    // Reset gyro to 0° when start button is pressed
     controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> new Rotation2d()));
-
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
+        .start()
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -146,6 +138,30 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+    //purge
+    controller.start().and(controller.back()).whileTrue(Commands.runOnce(null, null));
+    //coral ground
+    controller.leftTrigger().whileTrue(getAutonomousCommand());
+    // high L1
+    upFlick.onTrue(getAutonomousCommand());
+    // low L1
+    downFlick.onTrue(getAutonomousCommand());
+    // left align
+    leftFlick.onTrue(getAutonomousCommand());
+    // right align
+    rightFlick.onTrue(getAutonomousCommand());
+    // score
+    controller.rightTrigger(0.1).onTrue(getAutonomousCommand());
+
+    // L1, or processor, depending on if there is an algae or coral in the gripper
+    controller.a().onTrue(Commands.either(getAutonomousCommand(), getAutonomousCommand(), leftFlick));
+    // L2, or L2 Algae Intake, depending on if we have a coral
+    controller.b().onTrue(Commands.either(getAutonomousCommand(), getAutonomousCommand(), leftFlick));
+    // L3, or L3 Algae Intake, Depending if we have a coral
+    controller.x().onTrue(Commands.either(getAutonomousCommand(), getAutonomousCommand(), leftFlick));
+    // L4, or Barge, depending on if we have a coral or algae
+    controller.y().onTrue(Commands.either(getAutonomousCommand(), getAutonomousCommand(), leftFlick));
+    
   }
 
   /**

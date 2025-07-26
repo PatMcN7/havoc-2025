@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -75,5 +77,13 @@ public class Superstructure extends SubsystemBase {
   private void applyStates() {
     switch (currentSuperState) {
     }
+  }
+
+  private void setWantedState(SuperState state){
+    wantedSuperState = state;
+  }
+
+  public Command setStateCommand(SuperState state){
+    return Commands.runOnce(() -> setWantedState(state));
   }
 }
